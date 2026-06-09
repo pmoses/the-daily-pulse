@@ -1,0 +1,18 @@
+kind = "web"
+previewPath = "/"
+title = "The Daily Pulse"
+version = "1.0.0"
+id = "artifacts/news-site"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 8000
+
+[services.development]
+run = "bash /home/runner/workspace/news_site/start.sh"

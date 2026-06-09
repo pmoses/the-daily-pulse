@@ -1,0 +1,87 @@
+{% load static wagtailcore_tags wagtailimages_tags news_tags %}
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}The Daily Pulse{% endblock %}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['Georgia', 'Cambria', '"Times New Roman"', 'Times', 'serif'],
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@starfederation/datastar@1.0.0-beta.11/dist/datastar.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  {% block extra_head %}{% endblock %}
+</head>
+<body class="bg-gray-50 text-gray-900 font-sans antialiased min-h-screen flex flex-col">
+
+  <!-- Top Bar -->
+  <div class="bg-slate-900 text-white text-xs py-1.5">
+    <div class="max-w-7xl mx-auto px-4 flex items-center justify-between">
+      <span class="text-slate-400">
+        {% now "l, F j, Y" %}
+      </span>
+      <div class="flex items-center gap-4 text-slate-400">
+        <a href="/cms/" class="hover:text-white transition-colors">CMS</a>
+        <span>|</span>
+        <span>The Daily Pulse</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-2 group">
+        <div class="w-8 h-8 bg-red-600 rounded flex items-center justify-center">
+          <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M2 5a2 2 0 012-2h12a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V5zm3.293 1.293a1 1 0 011.414 0L10 9.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/>
+          </svg>
+        </div>
+        <span class="text-2xl font-serif font-bold text-slate-900 group-hover:text-red-600 transition-colors">The Daily Pulse</span>
+      </a>
+      <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600">
+        <a href="/" class="hover:text-red-600 transition-colors">Home</a>
+        {% block nav_categories %}{% endblock %}
+      </nav>
+      <a href="{% url 'wagtailadmin_home' %}" class="hidden sm:flex items-center gap-1.5 text-xs font-medium text-slate-500 hover:text-red-600 transition-colors border border-slate-200 rounded-full px-3 py-1.5">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+        </svg>
+        Edit
+      </a>
+    </div>
+  </header>
+
+  {% block content %}{% endblock %}
+
+  <!-- Footer -->
+  <footer class="mt-auto bg-slate-900 text-slate-400 py-10">
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+        <div class="flex items-center gap-2">
+          <div class="w-7 h-7 bg-red-600 rounded flex items-center justify-center">
+            <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M2 5a2 2 0 012-2h12a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V5z"/>
+            </svg>
+          </div>
+          <span class="font-serif font-bold text-white text-lg">The Daily Pulse</span>
+        </div>
+        <p class="text-xs text-slate-500">Powered by Wagtail CMS + Datastar &bull; Built with Django</p>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

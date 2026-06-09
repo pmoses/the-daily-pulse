@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% load wagtailcore_tags wagtailimages_tags news_tags %}
+
+{% block title %}The Daily Pulse — Breaking News &amp; Stories{% endblock %}
+
+{% block nav_categories %}
+  {% for cat in categories %}
+    <a href="/?category={{ cat.slug }}" class="hover:text-red-600 transition-colors capitalize">{{ cat.name }}</a>
+  {% endfor %}
+{% endblock %}
+
+{% block content %}
+
+  <!-- Breaking News Ticker -->
+  {% if breaking_articles %}
+  <div class="bg-red-600 text-white py-2 overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 flex items-center gap-3">
+      <span class="text-xs font-bold bg-white text-red-600 px-2 py-0.5 rounded uppercase tracking-wide shrink-0">Breaking</span>
+      <div class="flex gap-8 animate-none overflow-hidden whitespace-nowrap">
+        {% for article in breaking_articles %}
+          <a href="{{ article.url }}" class="text-sm hover:underline">{{ article.title }}</a>
+          {% if not forloop.last %}<span class="text-red-300 mx-2">•</span>{% endif %}
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <main class="max-w-7xl mx-auto px-4 py-8 w-full">
+
+    <!-- Featured Article Hero -->
+    {% if featured_article %}
+    <div class="mb-10">
+      <a href="{{ featured_article.url }}" class="group grid md:grid-cols-2 gap-6 bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+        <div class="aspect-[16/9] md:aspect-auto overflow-hidden bg-slate-100">
+          {% if featured_article.hero_image %}
+            {% image featured_article.hero_image fill-800x500 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" %}
+          {% else %}
+            <div class="w-full h-full bg-gradient-to-br from-slate-700 to-slate-900 flex items-center justify-center min-h-[280px]">
+              <span class="text-6xl text-slate-500 font-serif">P</span>
+            </div>
+          {% endif %}
+        </div>
+        <div class="p-8 flex flex-col justify-center">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="text-xs font-bold bg-red-100 text-red-700 border border-red-200 rounded-full px-2.5 py-0.5 uppercase tracking-wide">Featured</span>
+            {% for cat in featured_article.categories.all|slice:":1" %}
+              <span class="text-xs font-medium {{ cat.color|category_color_class }} border rounded-full px-2.5 py-0.5 uppercase tracking-wide">{{ cat.name }}</span>
+            {% endfor %}
+          </div>
+          <h1 class="text-2xl md:text-3xl font-serif font-bold text-slate-900 group-hover:text-red-600 transition-colors leading-snug mb-3">
+            {{ featured_article.title }}
+          </h1>
+          {% if featured_article.summary %}
+            <p class="text-slate-500 leading-relaxed mb-4">{{ featured_article.summary|truncatewords:30 }}</p>
+          {% endif %}
+          <div class="flex items-center gap-3 text-xs text-slate-400">
+            {% if featured_article.author %}
+              <span class="font-medium text-slate-600">{{ featured_article.author.name }}</span>
+              <span>·</span>
+            {% endif %}
+            <span>{{ featured_article.first_published_at|time_ago }}</span>
+            <span>·</span>
+            <span>{{ featured_article.reading_time }} min read</span>
+          </div>
+        </div>
+      </a>
+    </div>
+    {% endif %}
+
+    <!-- Search & Filter Section with Datastar -->
+    <div
+      data-store='{"query": "", "category": "all", "page": 1, "totalResults": 0, "hasMore": false, "currentPage": 1}'
+    >
+
+      <!-- Search + Category Filter Bar -->
+      <div class="flex flex-col sm:flex-row gap-3 mb-6">
+        <div class="relative flex-1">
+          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+          </svg>
+          <input
+            type="text"
+            placeholder="Search stories…"
+            class="w-full pl-9 pr-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent shadow-sm"
+            data-bind-query
+            data-on-input__debounce.300ms="@get('/news/search/')"
+          />
+        </div>
+        <div class="flex items-center gap-1 overflow-x-auto pb-1">
+          <button
+            class="shrink-0 px-3 py-2 rounded-xl text-sm font-medium transition-all"
+            data-class='{"bg-red-600 text-white shadow-sm": $category === "all", "bg-white text-slate-600 border border-gray-200 hover:border-red-300": $category !== "all"}'
+            data-on-click="$category = 'all'; $page = 1; @get('/news/search/')"
+          >All</button>
+          {% for cat in categories %}
+          <button
+            class="shrink-0 px-3 py-2 rounded-xl text-sm font-medium transition-all"
+            data-class='{"bg-red-600 text-white shadow-sm": $category === "{{ cat.slug }}", "bg-white text-slate-600 border border-gray-200 hover:border-red-300": $category !== "{{ cat.slug }}"}'
+            data-on-click="$category = '{{ cat.slug }}'; $page = 1; @get('/news/search/')"
+          >{{ cat.name }}</button>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Article Grid — target for Datastar SSE -->
+      <div id="article-grid">
+        {% include "news/partials/article_grid.html" with articles=latest_articles has_more=True page_num=1 total=latest_articles|length %}
+      </div>
+
+    </div>
+  </main>
+
+{% endblock %}
